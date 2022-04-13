@@ -48,8 +48,11 @@ SET default_table_access_method = heap;
 --
 
 CREATE TABLE public.galaxy (
-    name character varying(30),
-    galaxy_id integer NOT NULL
+    name character varying(30) NOT NULL,
+    galaxy_id integer NOT NULL,
+    description text,
+    galaxy_types character varying(30),
+    has_life boolean
 );
 
 
@@ -82,8 +85,11 @@ ALTER SEQUENCE public.galaxy_galaxy_id_seq OWNED BY public.galaxy.galaxy_id;
 --
 
 CREATE TABLE public.moon (
-    name character varying(30),
-    moon_id integer NOT NULL
+    name character varying(30) NOT NULL,
+    moon_id integer NOT NULL,
+    moon_types character varying(30),
+    is_spherical boolean,
+    is_age_in_millions_of_years numeric
 );
 
 
@@ -116,8 +122,13 @@ ALTER SEQUENCE public.moon_moon_id_seq OWNED BY public.moon.moon_id;
 --
 
 CREATE TABLE public.planet (
-    name character varying(30),
-    planet_id integer NOT NULL
+    name character varying(30) NOT NULL,
+    planet_id integer NOT NULL,
+    is_spherical boolean,
+    has_life boolean,
+    age_in_millions_of_years integer,
+    planet_types character varying(30),
+    star_id integer
 );
 
 
@@ -150,8 +161,12 @@ ALTER SEQUENCE public.planet_planet_id_seq OWNED BY public.planet.planet_id;
 --
 
 CREATE TABLE public.star (
-    name character varying(30),
-    star_id integer NOT NULL
+    name character varying(30) NOT NULL,
+    star_id integer NOT NULL,
+    star_types character varying(30),
+    age_in_millions_of_years integer,
+    distance_from_earth integer,
+    galaxy_id integer
 );
 
 
@@ -211,6 +226,12 @@ ALTER TABLE ONLY public.star ALTER COLUMN star_id SET DEFAULT nextval('public.st
 -- Data for Name: galaxy; Type: TABLE DATA; Schema: public; Owner: freecodecamp
 --
 
+INSERT INTO public.galaxy VALUES ('Milky Way', 1, 'decent chocolate', 'chocolate', true);
+INSERT INTO public.galaxy VALUES ('Babe Ruth', 2, 'never a fan', 'chocolate', false);
+INSERT INTO public.galaxy VALUES ('Bounty', 3, 'my favorite galaxy', 'coconut', true);
+INSERT INTO public.galaxy VALUES ('Snickers', 4, 'grumpy', 'caramel chocolate galaxy', false);
+INSERT INTO public.galaxy VALUES ('butterfinger', 5, 'slippery but tasty', 'crunchy', false);
+INSERT INTO public.galaxy VALUES ('malty', 6, 'strange looking', 'malt', false);
 
 
 --
@@ -235,7 +256,7 @@ ALTER TABLE ONLY public.star ALTER COLUMN star_id SET DEFAULT nextval('public.st
 -- Name: galaxy_galaxy_id_seq; Type: SEQUENCE SET; Schema: public; Owner: freecodecamp
 --
 
-SELECT pg_catalog.setval('public.galaxy_galaxy_id_seq', 1, false);
+SELECT pg_catalog.setval('public.galaxy_galaxy_id_seq', 6, true);
 
 
 --
@@ -321,6 +342,22 @@ ALTER TABLE ONLY public.star
 
 ALTER TABLE ONLY public.star
     ADD CONSTRAINT star_star_id_key UNIQUE (star_id);
+
+
+--
+-- Name: planet planet_star_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: freecodecamp
+--
+
+ALTER TABLE ONLY public.planet
+    ADD CONSTRAINT planet_star_id_fkey FOREIGN KEY (star_id) REFERENCES public.star(star_id);
+
+
+--
+-- Name: star star_galaxy_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: freecodecamp
+--
+
+ALTER TABLE ONLY public.star
+    ADD CONSTRAINT star_galaxy_id_fkey FOREIGN KEY (galaxy_id) REFERENCES public.galaxy(galaxy_id);
 
 
 --
